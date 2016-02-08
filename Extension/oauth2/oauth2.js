@@ -419,7 +419,7 @@ OAuth2.prototype.authorize = function(options, callback_success, callback_failur
         var data = that.get();
 
         if(!data.accessToken)
-        {/* TODO uncomment me
+        {
             console.log("OAuth2.prototype.authorize - no access token");
 
             // There's no access token yet. Start the authorizationCode flow
@@ -432,7 +432,7 @@ OAuth2.prototype.authorize = function(options, callback_success, callback_failur
             }
         }
         else if( that.isAccessTokenExpired() )
-        {*/
+        {
             console.log("OAuth2.prototype.authorize - has expired access token");
 
             // There's an existing access token but it's expired
