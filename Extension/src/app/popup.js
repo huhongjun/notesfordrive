@@ -240,7 +240,7 @@ function onDocumentChange(contents, $editable)
 
 function checkAuth(options)
 {
-  console.log("in checkAuth");
+    //console.log("in checkAuth");
 
     if(!navigator.onLine)
     {
@@ -248,22 +248,25 @@ function checkAuth(options)
         return;
     }
 
-    if( !background.gdrive.oauth.hasAccessToken() )
+    if(background.gdrive)
     {
-        background.gdrive.auth(options, authenticationSucceeded, authenticationFailed);
-    }
-    else
-    {
-        //background.gdrive.oauth.printAccessTokenData();
+        if( !background.gdrive.oauth.hasAccessToken() )
+        {
+            background.gdrive.auth(options, authenticationSucceeded, authenticationFailed);
+        }
+        else
+        {
+            //background.gdrive.googleAuth.printAccessTokenData();
 
-        // we have an access token - even if its expired it will be automatically refreshed on the next server call
-        authenticationSucceeded();
+            // we have an access token - even if its expired it will be automatically refreshed on the next server call
+            authenticationSucceeded();
+        }
     }
 }
 
 function authenticationSucceeded()
 {
-  console.log("in authenticationSucceeded");
+    //console.log("in authenticationSucceeded");
 
     displayDocs();
 
@@ -271,10 +274,15 @@ function authenticationSucceeded()
     background.updateCache();
 }
 
-function authenticationFailed()
+function authenticationFailed(errorCode)
 {
-  console.log("in authenticationFailed");
+    console.log("Authentication failed with code: " + errorCode);
+    updateDisplay();
+}
 
+function cacheUpdateFailed(errorCode)
+{
+    console.log("Cache update failed with code: " + errorCode);
     updateDisplay();
 }
 

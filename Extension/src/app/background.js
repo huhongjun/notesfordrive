@@ -19,7 +19,6 @@ var cache =
     documents: []
 };
 
-
 chrome.runtime.onInstalled.addListener(function(details)
 {
     if(details.reason == "install")
@@ -55,8 +54,9 @@ document.addEventListener("DOMContentLoaded", function()
     // automatically update the cache every 10 minutes
     var updateCacheFn = function()
     {
-        if(gdrive.oauth.hasAccessToken())
+        if(gdrive.oauth.hasAccessToken()) {
             updateCache();
+        }
     };
 
     cacheUpdateTimer = setInterval(updateCacheFn, 1000*60*10);
@@ -100,7 +100,7 @@ function onAuthenticated()
 
 function updateCache(completed)
 {
-    console.log("in updateCache, state=" + state);
+    //console.log("in updateCache, state=" + state);
 
     if(state == StateEnum.CACHING)
         return;
@@ -119,8 +119,7 @@ function updateCache(completed)
         else
         {
             // edge case for when folder created during a different session or on a different machine
-            if(!cache.lastUpdated)
-            {
+            if(!cache.lastUpdated) {
                 chrome.runtime.sendMessage({'initialCacheUpdateComplete': true});
             }
         }
@@ -178,25 +177,35 @@ function getFolder(name, completed)
 
 function setupDocumentsFolder(name, completed)
 {
-    gdrive.createFolder(name, 'root', function(response)
+    var success = function(response)
     {
         cache.lastUpdated = new Date();
 
-        if(completed)
+        if(completed) {
             completed(response);
-    })
+        }
+    };
+
+    var failure = function()
+    {
+        if(completed) {
+            completed();
+        }
+    };
+
+    gdrive.createFolder(name, 'root', success, failure)
 }
 
 
 function cacheDocs(completed)
 {
-    console.log("in cacheDocs");
+    //console.log("in cacheDocs");
 
     cachingDocuments = [];
 
     var finaliseCacheDocs = function()
     {
-        console.log("in finaliseCacheDocs");
+        //console.log("in finaliseCacheDocs");
 
         var changesMade = containsChanges(cache.documents, cachingDocuments);
 
@@ -214,20 +223,21 @@ function cacheDocs(completed)
 
     var checkComplete = function()
     {
-        console.log("in checkComplete");
+        //console.log("in checkComplete");
 
         // check caching has completed
         if( haveAllDownloaded(cachingDocuments) )
         {
             finaliseCacheDocs();
         }
-        else
-          console.log("in checkComplete - !haveAllDownloaded");
+        else {
+          //console.log("in checkComplete - !haveAllDownloaded");
+        }
     };
 
-    gdrive.listChildrenDocs(cache.folder.id, MAX_DOCS, function(children_response)
+    var listChildrenSuccess = function(children_response)
     {
-        console.log("in gdrive.listChildrenDocs");
+        //console.log("in gdrive.listChildrenDocs");
 
         if(children_response && children_response.items && children_response.items.length)
         {
@@ -247,7 +257,7 @@ function cacheDocs(completed)
             {
                 gdrive.getFile(child.id, function(item)
                 {
-                    console.log("in gdrive.listChildrenDocs gdrive.getFile - " + item.title);
+                    //console.log("in gdrive.listChildrenDocs gdrive.getFile - " + item.title);
 
                     var doc = cachingDocuments[index];
                     doc.item = item;
@@ -259,20 +269,13 @@ function cacheDocs(completed)
 
                     if(cachedDoc)
                     {
-                        var diff = cachedDoc.item.version != doc.item.version ? " ---- DIFF" : '';
-                        console.log('Doc \'' + doc.item.title + '\' - cached version: ' + cachedDoc.item.version + ', google version: ' + doc.item.version + diff);
-                    }
-
-                    if(doc.title == 'Notes Dev TODO')
-                    {
-                      console.log(doc.item);
-                      console.log("cached:");
-                      console.log(cachedDoc);
+                        //var diff = cachedDoc.item.version != doc.item.version ? " ---- DIFF" : '';
+                        //console.log('Doc \'' + doc.item.title + '\' - cached version: ' + cachedDoc.item.version + ', google version: ' + doc.item.version + diff);
                     }
 
                     if(cachedDoc && cachedDoc.item.version == doc.item.version)
                     {
-                        console.log("in gdrive.listChildrenDocs gdrive.getFile - hasDownloaded YES");
+                        //console.log("in gdrive.listChildrenDocs gdrive.getFile - hasDownloaded YES");
 
                         requiresDownload = false;
 
@@ -283,11 +286,11 @@ function cacheDocs(completed)
 
                     if(requiresDownload)
                     {
-                      console.log("in gdrive.listChildrenDocs gdrive.getFile - requires download");
+                      //console.log("in gdrive.listChildrenDocs gdrive.getFile - requires download");
 
                         gdrive.download(item.exportLinks['text/html'], function(responseData)
                         {
-                          console.log("in gdrive.listChildrenDocs gdrive.getFile - download completed");
+                          //console.log("in gdrive.listChildrenDocs gdrive.getFile - download completed");
 
                             var cleaned = cleanGoogleDocHTML(responseData);
 
@@ -308,7 +311,14 @@ function cacheDocs(completed)
         {
             finaliseCacheDocs();
         }
-    });
+    }
+
+    var listChildrenFailure = function()
+    {
+        finaliseCacheDocs();
+    }
+
+    gdrive.listChildrenDocs(cache.folder.id, MAX_DOCS, listChildrenSuccess, listChildrenFailure);
 }
 
 function matchDocumentById(itemId, list)
@@ -395,7 +405,7 @@ function haveAllDownloaded(docs)
 
         if(!doc.hasDownloaded)
         {
-          console.log("has not downloaded: " + doc.title);
+            //console.log("has not downloaded: " + doc.title);
             return false;
         }
     }
