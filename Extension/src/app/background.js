@@ -502,6 +502,8 @@ function saveDocument(doc, callback_started, callback_completed)
     if(!doc || !doc.dirty || doc.saving)
         return;
 
+    console.log(doc.contentHTML);
+
     doc.saving = true;
     doc.dirty = false;
 
@@ -603,7 +605,6 @@ function cleanGoogleDocHTML(html)
             return allowProperties.indexOf( decl.property ) > -1;
         })
     });
-
 
     return {
         css: cssParser.cssText(),

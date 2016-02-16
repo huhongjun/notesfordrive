@@ -43,10 +43,13 @@ function contentOfFirstOf(tags, text)
         var start_open_tag = '<'+tag;
         var start_open_index = text.indexOf(start_open_tag);
 
-        if(first_index < 0 || start_open_index < first_index)
+        if(start_open_index >= 0)
         {
-            first_tag = tag;
-            first_index = start_open_index;
+            if(first_index < 0 || start_open_index < first_index)
+            {
+                first_tag = tag;
+                first_index = start_open_index;
+            }
         }
     });
 

@@ -41,19 +41,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 
 function setupSummernote()
 {
-      var tmpl = $.summernote.renderer.getTemplate();
-      var editor = $.summernote.eventHandler.getEditor();
+      //var tmpl = $.summernote.renderer.getTemplate();
+      //var editor = $.summernote.eventHandler.getEditor();
 
-      $.summernote.addPlugin(
-      {
-          buttons: {
-            textColor: function (lang) {
-                return colorButton(lang);
-              }
-            }
-      });
-
-    $('.summernote').summernote(
+      $('.summernote').summernote(
        {
            height: 375,
 
@@ -64,52 +55,18 @@ function setupSummernote()
 
            toolbar: [
                ['font', ['bold', 'italic']],
-               ['color', ['textColor']],
+               ['color', ['color']],
                ['para', ['ul', 'ol']]
            ],
 
-           //onfocus: onDocumentFocus,
-           onChange: onDocumentChange
+           callbacks: {
+             //onfocus: onDocumentFocus,
+             onChange: onDocumentChange
+           }
        });
 
     $('.note-editor').css('border', 'none');
     $('.note-resizebar').css('display', 'none');
-}
-
-
-function colorButton(lang)
-{
-    var tmpl = $.summernote.renderer.getTemplate();
-
-    var colorButtonLabel = '<i class="fa fa-font" style="color:black;"></i>';
-
-    var colorButton = tmpl.button(colorButtonLabel,
-    {
-        className: 'note-recent-color',
-        title: lang.color.recent,
-        event: 'color',
-        value: '{"foreColor":"black"}'
-    });
-
-    var dropdown = '<ul class="dropdown-menu">' +
-                     '<li>' +
-                       '<div class="btn-group">' +
-                         '<div class="note-palette-title">' + 'Text Color' + '</div>' +
-                         '<div class="note-color-reset" data-event="foreColor" data-value="inherit" title="' + lang.color.reset + '">' +
-                           lang.color.resetToDefault +
-                         '</div>' +
-                         '<div class="note-color-palette" data-target-event="foreColor"></div>' +
-                       '</div>' +
-                     '</li>' +
-                   '</ul>';
-
-    var moreButton = tmpl.button('',
-    {
-        title: lang.color.more,
-        dropdown: dropdown
-    });
-
-    return colorButton + moreButton;
 }
 
 
@@ -226,11 +183,11 @@ function onDocumentChange(contents, $editable)
 {
     var doc = $('.summernote').data('editing-doc');
 
-    if(doc)
+    if(doc && !doc.ignoreChanges)
     {
         doc.dirty = true;
         //doc.cursorPos = document.getSelection().anchorOffset;
-        doc.contentHTML = $('.summernote').code();
+        doc.contentHTML = $('.summernote').summernote('code');
 
         updateDocumentTitle(doc);
         saveDocument(doc);
@@ -358,8 +315,10 @@ function setActiveDoc(doc)
 
     var content = resolveChecklists(doc.contentHTML);
 
-    $('.summernote').code(content);
+    doc.ignoreChanges = true;
     $('.summernote').data('editing-doc', doc);
+    $('.summernote').summernote('code', content);
+    doc.ignoreChanges = false;
 
     focusActiveInput();
 
