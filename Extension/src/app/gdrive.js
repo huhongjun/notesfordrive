@@ -124,6 +124,9 @@ GDrive.prototype.authenticatedRequest = function(config, success_callback, error
         {
             //console.log("retry_handler !has_retried");
 
+            // ensure accessToken is expired locally so we perform a refresh
+            this.googleAuth.expireAccessToken();
+
             var authentication_succeeded = function()
             {
                 //console.log("retry_handler authentication_succeeded");

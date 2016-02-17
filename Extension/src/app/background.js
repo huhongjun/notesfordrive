@@ -132,10 +132,15 @@ function updateCache(completed)
     {
         getFolder(DEFAULT_FOLDER_NAME, function(folder)
         {
-            cache.folder = folder;
-            cacheDocs( function() {
-                completed_wrapper(true); // first time opening (or creating) folder this session - force changesMade=true
-            });
+            if(folder)
+            {
+                cache.folder = folder;
+                cacheDocs( function() {
+                    completed_wrapper(true); // first time opening (or creating) folder this session - force changesMade=true
+                });
+            }
+            else
+                completed_wrapper(false);
         });
     }
     else
@@ -179,7 +184,7 @@ function setupDocumentsFolder(name, completed)
 {
     var success = function(response)
     {
-        cache.lastUpdated = new Date();
+      cache.lastUpdated = new Date();
 
         if(completed) {
             completed(response);
@@ -193,13 +198,13 @@ function setupDocumentsFolder(name, completed)
         }
     };
 
-    gdrive.createFolder(name, 'root', success, failure)
+    gdrive.createFolder(name, 'root', success, failure);
 }
 
 
 function cacheDocs(completed)
 {
-    //console.log("in cacheDocs");
+    //console.log("enter cacheDocs");
 
     cachingDocuments = [];
 
@@ -255,6 +260,8 @@ function cacheDocs(completed)
 
             children_response.items.forEach( function(child, index)
             {
+                //console.log("cacheDocs listChildrenDocs calling getFile..");
+
                 gdrive.getFile(child.id, function(item)
                 {
                     //console.log("in gdrive.listChildrenDocs gdrive.getFile - " + item.title);
@@ -286,11 +293,11 @@ function cacheDocs(completed)
 
                     if(requiresDownload)
                     {
-                      //console.log("in gdrive.listChildrenDocs gdrive.getFile - requires download");
+                        //console.log("in gdrive.listChildrenDocs gdrive.getFile - requires download");
 
                         gdrive.download(item.exportLinks['text/html'], function(responseData)
                         {
-                          //console.log("in gdrive.listChildrenDocs gdrive.getFile - download completed");
+                            //console.log("in gdrive.listChildrenDocs gdrive.getFile - download completed");
 
                             var cleaned = cleanGoogleDocHTML(responseData);
 

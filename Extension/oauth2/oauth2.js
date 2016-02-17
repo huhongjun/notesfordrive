@@ -488,12 +488,13 @@ OAuth2.prototype.authorize = function(options, callback_success, callback_failur
         }
         else
         {
-            /*
-            var timestamp = '[' + new Date().toUTCString() + '] ';
-            console.log(timestamp + 'OAuth2.prototype.authorize - we have an unexpired access token already, using it');
+            //var timestamp = '[' + new Date().toUTCString() + '] ';
+            //console.log(timestamp + 'OAuth2.prototype.authorize - we have an unexpired access token already, using it');
 
-            that.printAccessTokenData();
-            */
+            //that.printAccessTokenData();
+
+            // TODO for some reason it thinks we have a valid access token when the server is sending us a 401
+            // for the one we have - maybe we need a flag that forces us to refresh it?
 
             // We have an access token, and it's not expired yet
             if (callback_success) {
@@ -503,7 +504,7 @@ OAuth2.prototype.authorize = function(options, callback_success, callback_failur
     });
 };
 
-/*
+
 OAuth2.prototype.printAccessTokenData = function() {
   var data = this.get();
 
@@ -513,7 +514,7 @@ OAuth2.prototype.printAccessTokenData = function() {
   var timestamp_exp_at = new Date( data.accessTokenDate + data.expiresIn * 1000 );
   var timestamp_exp_in = (data.expiresIn - (new Date().valueOf() - data.accessTokenDate)/1000 ) / 60;
   console.log('token expires at ' + timestamp_exp_at.toUTCString() + ' in ' + timestamp_exp_in + ' minutes');
-}*/
+}
 
 /**
  * @returns A valid access token.
