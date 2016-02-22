@@ -196,8 +196,8 @@ GDrive.prototype.authenticatedRequest = function(config, success_callback, error
         console.log( xhr );
         console.log( e );
 
-        if(error_handler)
-            error_handler(xhr);
+        if(error_callback)
+            error_callback(xhr);
     };
 
     if( !this.googleAuth.hasAccessToken() )
