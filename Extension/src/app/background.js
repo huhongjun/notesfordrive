@@ -509,7 +509,7 @@ function saveDocument(doc, callback_started, callback_completed)
     if(!doc || !doc.dirty || doc.saving)
         return;
 
-    console.log(doc.contentHTML);
+    //console.log(doc.contentHTML);
 
     doc.saving = true;
     doc.dirty = false;
@@ -553,16 +553,14 @@ function cleanGoogleDocHTML(html)
     var styleContent = contentOfFirstTag('style', html);
 
     // remove empty span's and replace empty p's (including those with classes) with a line break
-    // convert p's to div's for better contenteditable element support
     bodyContent = bodyContent
+        .replace(/<div><span>/g, '<p>')
+        .replace(/<\/span><\/div>/g, '</p>')
         .replace(/<span><\/span>/g, '')
         .replace(/<span class=\"([\w\s]*)\"><\/span>/g, '')
-        .replace(/<p><\/p>/g, '<div><br/></div>')
-        .replace(/<p class=\"([\w\s]*)\"><\/p>/g, '<div><br/></div>')
-        .replace(/<p/g, '<div')
-        .replace(/<\/p>/g, '</div>');
+        .replace(/<p class=\"([\w\s]*)\"><\/p>/g, '<p><br/></p>');
 
-   // replace headings with bold spans
+    // replace headings with bold spans
     bodyContent = bodyContent
         .replace(/<h1/g, '<b')
         .replace(/<\/h1>/g, '</b>')

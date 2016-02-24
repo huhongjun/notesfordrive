@@ -609,7 +609,7 @@ function extractTitle(html)
         firstParagraph = contentUntil('<', html);
     }
     else
-        firstParagraph = contentOfFirstOf(['div','span'], html) ||  contentUntilFirstOf(['div','span'], html) || html;
+        firstParagraph = contentOfFirstOf(['div','span','p'], html) ||  contentUntilFirstOf(['div','span','p'], html) || html;
 
     var text = stripTags(firstParagraph);
 

@@ -446,12 +446,17 @@ h3
     border-bottom: 1px solid #d6d6d6;
 }
 
+.note-editable p
+{
+  margin-bottom: 10px;
+}
+
 .note-editable ul, ol
 {
   padding-top: 1px;
-  margin-bottom: 0;
+  margin-top: -10px; /* offsets <p> margin bottom */
+  margin-bottom: 14px;
 }
-
 .note-editable ul
 {
   padding-left: 32px;
