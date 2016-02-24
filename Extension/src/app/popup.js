@@ -67,6 +67,9 @@ function setupSummernote()
 
     $('.note-editor').css('border', 'none');
     $('.note-resizebar').css('display', 'none');
+
+    $('.note-btn').attr('tabindex', '-1');
+    $('.note-editable').attr('tabindex', '-1');
 }
 
 
@@ -541,7 +544,6 @@ function updateDisplay()
 function focusActiveInput()
 {
     var activeDoc = $('.summernote').data('editing-doc');
-
 
     if(activeDoc)
     {
