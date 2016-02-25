@@ -171,6 +171,25 @@ function setupTooltips()
 }
 
 
+function applyPrefs()
+{
+    // reset any changes jquery has made to the selectors in question
+    $('.note-editable p').attr('style','');
+    $('.note-editable ul, ol').attr('style','');
+
+    chrome.storage.sync.get('space-paragraphs-pref', function(result)
+    {
+        var spaceParagraphs = result[ 'space-paragraphs-pref' ];
+
+        if(!spaceParagraphs)
+        {
+            $(".note-editable p").css("margin", "0");
+            $(".note-editable ul, ol").css("margin-top", "0");
+        }
+    });
+}
+
+
 function onDocumentFocus(e)
 {/*
     var doc = $('.summernote').data('editing-doc');
@@ -336,6 +355,8 @@ function setActiveDoc(doc)
 
     $('.notes-list-item').removeClass('active');
     $listItem.addClass('active');
+
+    applyPrefs();
 
     updateActiveArrow();
     updateDisplay();

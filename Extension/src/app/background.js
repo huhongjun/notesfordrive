@@ -258,60 +258,69 @@ function cacheDocs(completed)
                 cachingDocuments.push(doc);
             });
 
+            var delay_ms = 0;
+
             children_response.items.forEach( function(child, index)
             {
                 //console.log("cacheDocs listChildrenDocs calling getFile..");
 
-                gdrive.getFile(child.id, function(item)
+                var retrieve = function()
                 {
-                    //console.log("in gdrive.listChildrenDocs gdrive.getFile - " + item.title);
-
-                    var doc = cachingDocuments[index];
-                    doc.item = item;
-                    doc.title = item.title;
-                    doc.cursorPos = item.cursorPos;
-
-                    var cachedDoc = matchDocumentById(doc.item.id, cache.documents);
-                    var requiresDownload = true;
-
-                    if(cachedDoc)
+                    gdrive.getFile(child.id, function(item)
                     {
-                        //var diff = cachedDoc.item.version != doc.item.version ? " ---- DIFF" : '';
-                        //console.log('Doc \'' + doc.item.title + '\' - cached version: ' + cachedDoc.item.version + ', google version: ' + doc.item.version + diff);
-                    }
+                        //console.log("in gdrive.listChildrenDocs gdrive.getFile - " + item.title);
 
-                    if(cachedDoc && cachedDoc.item.version == doc.item.version)
-                    {
-                        //console.log("in gdrive.listChildrenDocs gdrive.getFile - hasDownloaded YES");
+                        var doc = cachingDocuments[index];
+                        doc.item = item;
+                        doc.title = item.title;
+                        doc.cursorPos = item.cursorPos;
 
-                        requiresDownload = false;
+                        var cachedDoc = matchDocumentById(doc.item.id, cache.documents);
+                        var requiresDownload = true;
 
-                        doc.title = cachedDoc.title;
-                        doc.contentHTML = cachedDoc.contentHTML;
-                        doc.hasDownloaded = true;
-                    }
-
-                    if(requiresDownload)
-                    {
-                        //console.log("in gdrive.listChildrenDocs gdrive.getFile - requires download");
-
-                        gdrive.download(item.exportLinks['text/html'], function(responseData)
+                        if(cachedDoc)
                         {
-                            //console.log("in gdrive.listChildrenDocs gdrive.getFile - download completed");
+                            //var diff = cachedDoc.item.version != doc.item.version ? " ---- DIFF" : '';
+                            //console.log('Doc \'' + doc.item.title + '\' - cached version: ' + cachedDoc.item.version + ', google version: ' + doc.item.version + diff);
+                        }
 
-                            var cleaned = cleanGoogleDocHTML(responseData);
+                        if(cachedDoc && cachedDoc.item.version == doc.item.version)
+                        {
+                            //console.log("in gdrive.listChildrenDocs gdrive.getFile - hasDownloaded YES");
 
-                            doc.contentHTML = "<style type=\"text/css\" scoped>" + cleaned.css + "</style>" + cleaned.html;
+                            requiresDownload = false;
+
+                            doc.title = cachedDoc.title;
+                            doc.contentHTML = cachedDoc.contentHTML;
                             doc.hasDownloaded = true;
+                        }
 
+                        if(requiresDownload)
+                        {
+                            //console.log("in gdrive.listChildrenDocs gdrive.getFile - requires download");
+
+                            gdrive.download(item.exportLinks['text/html'], function(responseData)
+                            {
+                                //console.log("in gdrive.listChildrenDocs gdrive.getFile - download completed");
+
+                                var cleaned = cleanGoogleDocHTML(responseData);
+
+                                doc.contentHTML = "<style type=\"text/css\" scoped>" + cleaned.css + "</style>" + cleaned.html;
+                                doc.hasDownloaded = true;
+
+                                checkComplete();
+                            });
+                        }
+                        else
+                        {
                             checkComplete();
-                        });
-                    }
-                    else
-                    {
-                        checkComplete();
-                    }
-                });
+                        }
+                    });
+                }
+
+                // space each document retrieval apart by 50ms to avoid rate-limiting
+                delay_ms += 50;
+                setTimeout(retrieve, delay_ms);
             });
         }
         else

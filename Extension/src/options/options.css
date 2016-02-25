@@ -107,3 +107,17 @@ hr
     font-size: 1.15em;
     color: #555555;
 }
+
+
+#space-paragraphs-label
+{
+  position: relative;
+  top: 1px;
+  left: 2px;
+}
+
+#space-paragraphs-container
+{
+  position: relative;
+  left: 5px
+}

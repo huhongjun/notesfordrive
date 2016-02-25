@@ -116,9 +116,9 @@ GDrive.prototype.authenticatedRequest = function(config, success_callback, error
         xhr.setRequestHeader(key, headers[key]);
 
 
-    var retry_handler = function(xhr)
+    var retry_auth_handler = function(xhr)
     {
-        //console.log("retry_handler");
+        //console.log("retry_auth_handler");
 
         if(!opt_has_retried)
         {
@@ -172,6 +172,17 @@ GDrive.prototype.authenticatedRequest = function(config, success_callback, error
     }.bind(this);
 
 
+    var retry_request_handler = function(delay_ms)
+    {
+        var retry = function()
+        {
+           this.authenticatedRequest(config, success_callback, error_callback);
+        }.bind(this);
+
+        setTimeout(retry, delay_ms);
+    }.bind(this);
+
+
     xhr.onload = function(e)
     {
         if(xhr.status == 200)
@@ -179,9 +190,21 @@ GDrive.prototype.authenticatedRequest = function(config, success_callback, error
             if(success_callback)
                 success_callback(xhr);
         }
-        else if(xhr.status == 401 || xhr.status == 403)
+        else if(xhr.status == 401)
         {
-            retry_handler(xhr);
+            var errors = JSON.parse(xhr.responseText);
+            console.log(errors.error.message);
+
+            retry_auth_handler(xhr);
+        }
+        else if(xhr.status == 403)
+        {
+            var errors = JSON.parse(xhr.responseText);
+            console.log(errors.error.message);
+
+            // user has been rate limited - retry after delay
+            var delay_ms = 1000;
+            retry_request_handler(delay_ms);
         }
         else
         {
