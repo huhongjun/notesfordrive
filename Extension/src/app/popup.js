@@ -127,6 +127,8 @@ function setupSortable()
 
 function setupRate()
 {
+    var CHECK_INTERVAL = 30;
+
     $('#rate-button').click( function()
     {
         $('#rate-dialog').hide();
@@ -140,8 +142,16 @@ function setupRate()
     {
         $('#rate-dialog').hide();
         $('#rate-overlay').hide();
+
+        // reset opens counter
         chrome.storage.sync.set({'opened': 0});
-        chrome.storage.sync.set({'check-at': 60});
+
+        // increase the checkAt count exponentially so as not to annoy users
+        chrome.storage.sync.get(null, function(result)
+        {
+            var checkAt = result['check-at'] + CHECK_INTERVAL;
+            chrome.storage.sync.set({'check-at': checkAt});
+        });
     });
 
     chrome.storage.sync.get(null, function(result)
@@ -151,7 +161,7 @@ function setupRate()
         var checkAt = result['check-at'];
 
         if(!opened) opened = 0;
-        if(!checkAt) checkAt = 30;
+        if(!checkAt) checkAt = CHECK_INTERVAL;
 
         if(!rated && opened >= checkAt)
         {
@@ -160,6 +170,7 @@ function setupRate()
         }
 
         chrome.storage.sync.set({'opened': opened+1});
+        chrome.storage.sync.set({'check-at': checkAt});
     });
 }
 
