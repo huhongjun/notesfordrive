@@ -567,6 +567,8 @@ function cleanGoogleDocHTML(html)
         .replace(/<\/span><\/div>/g, '</p>')
         .replace(/<span><\/span>/g, '')
         .replace(/<span class=\"([\w\s]*)\"><\/span>/g, '')
+        .replace(/<p style>/g, '<p>')
+        .replace(/<p><\/p>/g, '<p><br/></p>')
         .replace(/<p class=\"([\w\s]*)\"><\/p>/g, '<p><br/></p>');
 
     // replace headings with bold spans
