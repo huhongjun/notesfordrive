@@ -100,8 +100,6 @@ function onAuthenticated()
 
 function updateCache(completed)
 {
-    //console.log("in updateCache, state=" + state);
-
     if(state == StateEnum.CACHING)
         return;
 
@@ -204,14 +202,10 @@ function setupDocumentsFolder(name, completed)
 
 function cacheDocs(completed)
 {
-    //console.log("enter cacheDocs");
-
     cachingDocuments = [];
 
     var finaliseCacheDocs = function()
     {
-        //console.log("in finaliseCacheDocs");
-
         var changesMade = containsChanges(cache.documents, cachingDocuments);
 
         if(changesMade)
@@ -228,22 +222,14 @@ function cacheDocs(completed)
 
     var checkComplete = function()
     {
-        //console.log("in checkComplete");
-
         // check caching has completed
-        if( haveAllDownloaded(cachingDocuments) )
-        {
+        if( haveAllDownloaded(cachingDocuments) ) {
             finaliseCacheDocs();
-        }
-        else {
-          //console.log("in checkComplete - !haveAllDownloaded");
         }
     };
 
     var listChildrenSuccess = function(children_response)
     {
-        //console.log("in gdrive.listChildrenDocs");
-
         if(children_response && children_response.items && children_response.items.length)
         {
             children_response.items.forEach( function(child, index)
@@ -262,14 +248,10 @@ function cacheDocs(completed)
 
             children_response.items.forEach( function(child, index)
             {
-                //console.log("cacheDocs listChildrenDocs calling getFile..");
-
                 var retrieve = function()
                 {
                     gdrive.getFile(child.id, function(item)
                     {
-                        //console.log("in gdrive.listChildrenDocs gdrive.getFile - " + item.title);
-
                         var doc = cachingDocuments[index];
                         doc.item = item;
                         doc.title = item.title;
@@ -278,16 +260,8 @@ function cacheDocs(completed)
                         var cachedDoc = matchDocumentById(doc.item.id, cache.documents);
                         var requiresDownload = true;
 
-                        if(cachedDoc)
-                        {
-                            //var diff = cachedDoc.item.version != doc.item.version ? " ---- DIFF" : '';
-                            //console.log('Doc \'' + doc.item.title + '\' - cached version: ' + cachedDoc.item.version + ', google version: ' + doc.item.version + diff);
-                        }
-
                         if(cachedDoc && cachedDoc.item.version == doc.item.version)
                         {
-                            //console.log("in gdrive.listChildrenDocs gdrive.getFile - hasDownloaded YES");
-
                             requiresDownload = false;
 
                             doc.title = cachedDoc.title;
@@ -297,12 +271,8 @@ function cacheDocs(completed)
 
                         if(requiresDownload)
                         {
-                            //console.log("in gdrive.listChildrenDocs gdrive.getFile - requires download");
-
                             gdrive.download(item.exportLinks['text/html'], function(responseData)
                             {
-                                //console.log("in gdrive.listChildrenDocs gdrive.getFile - download completed");
-
                                 var cleaned = cleanGoogleDocHTML(responseData);
 
                                 doc.contentHTML = "<style type=\"text/css\" scoped>" + cleaned.css + "</style>" + cleaned.html;
@@ -419,9 +389,7 @@ function haveAllDownloaded(docs)
     {
         var doc = docs[i];
 
-        if(!doc.hasDownloaded)
-        {
-            //console.log("has not downloaded: " + doc.title);
+        if(!doc.hasDownloaded) {
             return false;
         }
     }
@@ -431,8 +399,9 @@ function haveAllDownloaded(docs)
 
 function storeOrder(docs)
 {
-    if(!docs)
+    if(!docs) {
         return;
+    }
 
     var identifiers = [];
 
@@ -490,8 +459,9 @@ function indexOfDocumentWithId(docList, docId)
 
 Array.prototype.move = function(from, to)
 {
-    if(from != to)
+    if(from != to) {
         this.splice(to, 0, this.splice(from, 1)[0]);
+    }
 };
 
 
@@ -518,13 +488,12 @@ function saveDocument(doc, callback_started, callback_completed)
     if(!doc || !doc.dirty || doc.saving)
         return;
 
-    //console.log(doc.contentHTML);
-
     doc.saving = true;
     doc.dirty = false;
 
-    if(callback_started)
+    if(callback_started) {
         callback_started();
+    }
 
     var success = function(item_response)
     {

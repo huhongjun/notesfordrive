@@ -38,14 +38,10 @@ GDrive.prototype.setAllowInteractiveReauth = function(allow)
 
 GDrive.prototype.auth = function(options, opt_callback_authorized, opt_callback_failure)
 {
-    //console.log("in GDrive.prototype.auth");
-
     try
     {
         var authentication_succeeded = function()
         {
-            //console.log("in GDrive.prototype.auth authentication_succeeded");
-
             chrome.runtime.sendMessage( {'authenticationSucceeded': true} );
 
             if(opt_callback_authorized)
@@ -164,8 +160,6 @@ GDrive.prototype.authenticatedRequest = function(config, success_callback, error
         }
         else
         {
-            //console.log("retry_handler has_retried");
-
             if(error_callback)
                 error_callback(xhr);
         }
@@ -225,7 +219,6 @@ GDrive.prototype.authenticatedRequest = function(config, success_callback, error
 
     if( !this.googleAuth.hasAccessToken() )
     {
-      //console.log("calling retry_handler");
       retry_handler(xhr);
     }
     else {

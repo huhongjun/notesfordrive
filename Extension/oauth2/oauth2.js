@@ -408,20 +408,14 @@ OAuth2.lookupAdapterName = function(url) {
  */
 OAuth2.prototype.authorize = function(options, callback_success, callback_failure)
 {
-    //console.log("OAuth2.prototype.authorize");
-
     var that = this;
     OAuth2.loadAdapter(that.adapterName, function()
     {
-        //console.log("OAuth2.prototype.authorize - in OAuth2.loadAdapter");
-
         that.adapter = OAuth2.adapters[that.adapterName];
         var data = that.get();
 
         if(!data.accessToken)
         {
-            //console.log("OAuth2.prototype.authorize - no access token");
-
             // There's no access token yet. Start the authorizationCode flow
             if(options.interactive) {
                 that.openAuthorizationCodePopup(callback_success);
@@ -434,38 +428,24 @@ OAuth2.prototype.authorize = function(options, callback_success, callback_failur
         }
         else if( that.isAccessTokenExpired() )
         {
-            //console.log("OAuth2.prototype.authorize - has expired access token");
-
             // There's an existing access token but it's expired
             if(data.refreshToken)
             {
-                //console.log("OAuth2.prototype.authorize - has refresh token");
-
                 that.refreshAccessToken(data.refreshToken, function(access_token, expires_in, refresh_token)
                 {
                     if(!access_token)
                     {
-                        //console.log("OAuth2.prototype.authorize - did refresh failure");
-
                         if(callback_failure)
                             callback_failure("auth.failed.refresh.noaccesstoken");
                     }
                     else
                     {
-                        //console.log("OAuth2.prototype.authorize - did refresh success");
-
                         var newData = that.get();
                         newData.accessTokenDate = new Date().valueOf();
                         newData.accessToken = access_token;
                         newData.expiresIn = expires_in;
                         newData.refreshToken = refresh_token || newData.refreshToken;
                         that.setSource(newData);
-
-                        /*
-                        var timestamp = '[' + new Date().toUTCString() + '] ';
-                        console.log(timestamp + 'OAuth2 access token refreshed');
-                        that.printAccessTokenData();
-                        */
 
                         // Callback when we finish refreshing
                         if (callback_success) {
@@ -488,14 +468,6 @@ OAuth2.prototype.authorize = function(options, callback_success, callback_failur
         }
         else
         {
-            //var timestamp = '[' + new Date().toUTCString() + '] ';
-            //console.log(timestamp + 'OAuth2.prototype.authorize - we have an unexpired access token already, using it');
-
-            //that.printAccessTokenData();
-
-            // TODO for some reason it thinks we have a valid access token when the server is sending us a 401
-            // for the one we have - maybe we need a flag that forces us to refresh it?
-
             // We have an access token, and it's not expired yet
             if (callback_success) {
                 callback_success();
