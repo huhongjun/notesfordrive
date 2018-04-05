@@ -121,3 +121,9 @@ hr
   position: relative;
   left: 5px
 }
+
+#btcaddr {
+  background-color: #e7ffdb;
+  padding: 20px;
+  border-radius: 5px;
+}
