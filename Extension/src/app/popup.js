@@ -118,8 +118,6 @@ function setupButtons()
         if(activeDoc) {
             trashDocument(activeDoc);
         }
-
-        $popoverSelector.popover('hide');
     });
 
     $("#edit-in-drive-button").click( function()
@@ -130,8 +128,6 @@ function setupButtons()
         if(activeDoc && activeDoc.item) {
             chrome.tabs.create({ url: activeDoc.item.alternateLink });
         }
-
-        $popoverSelector.popover('hide');
     });
 }
 
