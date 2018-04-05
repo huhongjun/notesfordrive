@@ -1,9 +1,27 @@
 
+// -- Analytics --
+var _AnalyticsCode = 'UA-52658958-1';
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', _AnalyticsCode]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script');
+  ga.type = 'text/javascript';
+  ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ga, s);
+})();
+function trackButtonClick(id) {
+  _gaq.push(['_trackEvent', id, 'clicked']);
+}
+// -- Analytics --
+
 var background = chrome.extension.getBackgroundPage();
 
 // this is used to configure whether interactive re-authentication is enabled on 401's (ie. when access tokens expire)
 var port = chrome.runtime.connect( {name: 'popup'} );
-
 
 document.addEventListener('DOMContentLoaded', function()
 {
@@ -46,10 +64,10 @@ function setupSummernote()
 
       $('.summernote').summernote(
        {
-           height: 375,
+           height: 427,
 
-           minHeight: 375,  // set minimum height of editor
-           maxHeight: 375,  // set maximum height of editor
+           minHeight: 427,  // set minimum height of editor
+           maxHeight: 427,  // set maximum height of editor
 
            focus: false,
 
@@ -76,26 +94,25 @@ function setupButtons()
 {
     $('#settings-button').click( function()
     {
-      ga('send', 'event', 'Button', 'Click', 'Open Settings');
+      trackButtonClick("open-settings");
       chrome.tabs.create({'url': chrome.extension.getURL("src/options/options.html") } );
     });
 
     $('#new-button').click( function()
     {
-      var numberOfNotes = background.cache.documents.length
-      ga('send', 'event', 'Button', 'Click', 'Create Note', numberOfNotes);
+      trackButtonClick("create-note");
       createDocument();
     });
 
     $('#authorize-button').click( function()
     {
-      ga('send', 'event', 'Button', 'Click', 'Authorise');
+      trackButtonClick("authorize");
       checkAuth({interactive:true});
     });
 
     $("#trash-button").click( function()
     {
-        ga('send', 'event', 'Button', 'Click', 'Delete Note');
+        trackButtonClick("trash");
         var activeDoc = $('.summernote').data('editing-doc');
 
         if(activeDoc) {
@@ -107,7 +124,7 @@ function setupButtons()
 
     $("#edit-in-drive-button").click( function()
     {
-        ga('send', 'event', 'Button', 'Click', 'Edit in Drive');
+      trackButtonClick("edit-in-drive");
         var activeDoc = $('.summernote').data('editing-doc');
 
         if(activeDoc && activeDoc.item) {
@@ -138,7 +155,7 @@ function setupRate()
 
     $('#rate-button').click( function()
     {
-        ga('send', 'event', 'Button', 'Click', 'Rate');
+        trackButtonClick("rate");
         $('#rate-dialog').hide();
         $('#rate-overlay').hide();
         chrome.storage.sync.set({'rated': true});
@@ -148,7 +165,7 @@ function setupRate()
 
     $('#rate-dismiss-button').click( function()
     {
-        ga('send', 'event', 'Button', 'Click', 'Rate Dismiss');
+        trackButtonClick("rate-dismiss");
         $('#rate-dialog').hide();
         $('#rate-overlay').hide();
 
