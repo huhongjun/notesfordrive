@@ -76,35 +76,43 @@ function setupButtons()
 {
     $('#settings-button').click( function()
     {
+      ga('send', 'event', 'Button', 'Click', 'Open Settings');
       chrome.tabs.create({'url': chrome.extension.getURL("src/options/options.html") } );
     });
 
     $('#new-button').click( function()
     {
+      var numberOfNotes = background.cache.documents.length
+      ga('send', 'event', 'Button', 'Click', 'Create Note', numberOfNotes);
       createDocument();
     });
 
     $('#authorize-button').click( function()
     {
+      ga('send', 'event', 'Button', 'Click', 'Authorise');
       checkAuth({interactive:true});
     });
 
     $("#trash-button").click( function()
     {
+        ga('send', 'event', 'Button', 'Click', 'Delete Note');
         var activeDoc = $('.summernote').data('editing-doc');
 
-        if(activeDoc)
+        if(activeDoc) {
             trashDocument(activeDoc);
+        }
 
         $popoverSelector.popover('hide');
     });
 
     $("#edit-in-drive-button").click( function()
     {
+        ga('send', 'event', 'Button', 'Click', 'Edit in Drive');
         var activeDoc = $('.summernote').data('editing-doc');
 
-        if(activeDoc && activeDoc.item)
+        if(activeDoc && activeDoc.item) {
             chrome.tabs.create({ url: activeDoc.item.alternateLink });
+        }
 
         $popoverSelector.popover('hide');
     });
@@ -130,6 +138,7 @@ function setupRate()
 
     $('#rate-button').click( function()
     {
+        ga('send', 'event', 'Button', 'Click', 'Rate');
         $('#rate-dialog').hide();
         $('#rate-overlay').hide();
         chrome.storage.sync.set({'rated': true});
@@ -139,6 +148,7 @@ function setupRate()
 
     $('#rate-dismiss-button').click( function()
     {
+        ga('send', 'event', 'Button', 'Click', 'Rate Dismiss');
         $('#rate-dialog').hide();
         $('#rate-overlay').hide();
 
@@ -295,8 +305,7 @@ function displayDocs()
         });
 
         // if we didn't set an active doc then set the first
-        if( $('.active').length == 0 )
-        {
+        if( $('.active').length == 0 ) {
             setActiveDoc( background.cache.documents[0] );
         }
     }
@@ -316,8 +325,7 @@ function addDocument(doc)
 
     doc.$notesListElement = e;
 
-    e.click(function()
-    {
+    e.click(function() {
         setActiveDoc(doc);
     });
 
