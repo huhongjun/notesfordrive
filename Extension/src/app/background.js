@@ -1,4 +1,22 @@
 
+// -- Analytics --
+var _AnalyticsCode = 'UA-52658958-1';
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', _AnalyticsCode]);
+
+(function() {
+  var ga = document.createElement('script');
+  ga.type = 'text/javascript';
+  ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ga, s);
+})();
+function track(name, val) {
+  _gaq.push(['_trackEvent', name, val]);
+}
+// -- Analytics --
+
 var MAX_DOCS = 100;
 var DEFAULT_FOLDER_NAME = 'Notes';
 
@@ -21,16 +39,17 @@ var cache =
 
 chrome.runtime.onInstalled.addListener(function(details)
 {
+    var thisVersion = chrome.runtime.getManifest().version;
+
     if(details.reason == "install")
     {
+        track("installed", thisVersion);
         chrome.tabs.create({url: '/src/app/installed.html'});
     }
     else if(details.reason == "update")
     {
-        var thisVersion = chrome.runtime.getManifest().version;
-
-        if(thisVersion == "1.6")
-        {
+        track("updated", thisVersion);
+        if(thisVersion == "1.6") {
             chrome.tabs.create({url: '/src/app/updated.html'});
         }
     }
