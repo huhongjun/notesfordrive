@@ -57,10 +57,56 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
 });
 
 
+var savedRange = undefined
+
 function setupSummernote()
 {
-      //var tmpl = $.summernote.renderer.getTemplate();
-      //var editor = $.summernote.eventHandler.getEditor();
+     var HelloButton = function (context) {
+          var ui = $.summernote.ui;
+
+          // create button
+          var button = ui.button({
+              contents: '<i class="fa fa-child"/> Hello',
+              tooltip: 'hello',
+              click: function () {
+                  // context.invoke('editor.insertText', 'hello');
+                  context.invoke('editor.indent');
+              }
+          });
+
+          return button.render(); // return button as jquery object
+      }
+
+      var SaveRangeButton = function (context) {
+           var ui = $.summernote.ui;
+
+           var button = ui.button({
+               contents: 'Save Range',
+               tooltip: 'saveRange',
+               click: function () {
+                   savedRange = context.invoke('editor.createRange');
+               }
+           });
+
+           return button.render();
+       }
+
+       var RestoreRangeButton = function (context) {
+            var ui = $.summernote.ui;
+
+            var button = ui.button({
+                contents: 'Restore Range',
+                tooltip: 'restoreRange',
+                click: function () {
+                  if(savedRange) {
+                    savedRange.select();
+                  }
+                }
+            });
+
+            return button.render();
+        }
+
 
       $('.summernote').summernote(
        {
@@ -71,16 +117,28 @@ function setupSummernote()
 
            focus: false,
 
+           placeholder: 'Title',
+
+           buttons: {
+             hello: HelloButton,
+             saveR: SaveRangeButton,
+             restoreR: RestoreRangeButton
+           },
+
            toolbar: [
                ['font', ['bold', 'italic']],
                ['color', ['color']],
-               ['para', ['ul', 'ol']]
+               ['para', ['ul', 'ol']],
+               ['mybutton', ['hello', 'saveR', 'restoreR']]
            ],
 
            callbacks: {
-             onChange: onDocumentChange
+             onChange: onContentChange,
+             onPaste: onContentPaste,
+             onKeydown: onKeyDown
            }
        });
+
 
     $('.note-editor').css('border', 'none');
     $('.note-resizebar').css('display', 'none');
@@ -236,8 +294,39 @@ function onDocumentFocus(e)
     }
 }*/
 
-function onDocumentChange(contents, $editable)
-{
+function onKeyDown(e) {
+  if(e.keyCode == 9) {
+    console.log('tab key pressed');
+    // if(cursor on line with list item) {
+      // context.invoke('editor.indent');
+      // $('#summernote').summernote('editor.insertText', "whoa");
+      $('#summernote').summernote('editor.insertText', 'hello world');
+      // $('#summernote').summernote('editor.indent');
+    // }
+    // else {}
+    //   insertTextAtCursor("\t");
+    // }
+    // e.preventDefault();
+    // e.stopPropagation();
+  }
+}
+
+function onContentPaste(event) {
+}
+
+function onContentChange(contents, $editable) {
+
+    // TODO nested lists
+    // - add a new method to Summernote/Bullet (or ideally not modifying summernote source and just use the exposed methods)
+    //   that either creates a new list if the current line (editable?) isn't a list, otherwise indents the current list item
+    // - use that method for the list button (instead of the default) as a custom button
+    // - update bullet char for different list levels
+    // - two enters on a list should end the list and goto a new line
+
+    updateAndSaveContentToCurrentDocument();
+}
+
+function updateAndSaveContentToCurrentDocument() {
     var doc = $('.summernote').data('editing-doc');
 
     if(doc && !doc.ignoreChanges)
@@ -245,6 +334,7 @@ function onDocumentChange(contents, $editable)
         doc.dirty = true;
         //doc.cursorPos = document.getSelection().anchorOffset;
         doc.contentHTML = $('.summernote').summernote('code');
+        doc.selectionRange = $('#summernote').summernote('createRange');
 
         updateDocumentTitle(doc);
         saveDocument(doc);
@@ -356,15 +446,15 @@ function setActiveDoc(doc)
     // NOTE: if the current active document has pending changes then it will still have
     // a timer running on it that will save the changes
 
-    if(!doc)
-    {
+    if(!doc) {
         updateDisplay();
         return;
     }
 
     // don't do anything if we're already the active doc
-    if( isActiveDoc(doc) )
+    if( isActiveDoc(doc) ) {
       return;
+    }
 
     setLastActiveDocument(doc);
     applyPrefs();
@@ -376,8 +466,8 @@ function setActiveDoc(doc)
     $('.summernote').summernote('code', content);
     doc.ignoreChanges = false;
 
-    focusActiveInput();
 
+    focusActiveInput();
 
     $('#active-note-status').empty();
     if(doc.item) {
@@ -434,8 +524,9 @@ function trashDocument(doc)
         if(index > 0) {
             nextDoc = documents[index - 1];
         }
-        else
+        else {
             nextDoc = documents[index];
+        }
     }
 
     setActiveDoc(nextDoc);
@@ -611,11 +702,10 @@ function focusActiveInput()
             $('.note-editable').blur();
         }
 
-        /*
-        $('.summernote').summernote({focus:true});
-
-        if(activeDoc.cursorPos)
-            document.getSelection().anchorOffset = activeDoc.cursorPos;*/
+        // TODO look into using summernote createRange/save/restore or its internal
+        // classes to save and restore the range - note that the structure of the initial html
+        // might not match what the doc content is once the doc is opened/restored so the range may not work without
+        // some extra work
     }
 }
 
