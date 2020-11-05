@@ -44,14 +44,14 @@ chrome.runtime.onInstalled.addListener(function(details)
     if(details.reason == "install")
     {
         track("installed", "installed-" + thisVersion);
-        chrome.tabs.create({url: '/src/app/installed.html'});
+        // chrome.tabs.create({url: '/src/app/installed.html'});
     }
     else if(details.reason == "update")
     {
         track("updated", "updated-to-" + thisVersion);
-        if(thisVersion == "1.6") {
-            chrome.tabs.create({url: '/src/app/updated.html'});
-        }
+        // if(thisVersion == "1.6") {
+            // chrome.tabs.create({url: '/src/app/updated.html'});
+        // }
     }
 });
 

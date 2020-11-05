@@ -1,6 +1,6 @@
 {
   "name": "Notes for Google Drive",
-  "version": "1.14",
+  "version": "1.15",
   "manifest_version": 2,
   "description": "Easily create notes from within Chrome that are automatically synced as Documents to your Google Drive account.",
   "icons": {
@@ -34,7 +34,6 @@
     "default_popup": "src/app/popup.html"
   },
   "permissions": [
-    "tabs",
     "storage",
     "https://www.googleapis.com/",
     "https://accounts.google.com/"

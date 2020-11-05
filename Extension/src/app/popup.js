@@ -749,12 +749,11 @@ function extractTitle(html)
 
     var firstParagraph = null;
 
-    if(html && html.length && html.charAt(0) != '<')
-    {
-        firstParagraph = contentUntil('<', html);
+    if(html && html.length && html.charAt(0) != '<') {
+      firstParagraph = contentUntil('<', html);
+    } else {
+      firstParagraph = contentOfFirstOf(['span','p'], html) || contentUntilFirstOf(['span','p'], html) || html;
     }
-    else
-        firstParagraph = contentOfFirstOf(['div','span','p'], html) ||  contentUntilFirstOf(['div','span','p'], html) || html;
 
     var text = stripTags(firstParagraph);
 
