@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function()
 
     $('.drive-folder-name').text( background.DEFAULT_FOLDER_NAME );
 
+    $('#settings-button').attr('title', chrome.i18n.getMessage('popup_settings_button'));
+
     window.setTimeout(function()
     {
         checkAuth({interactive:false});

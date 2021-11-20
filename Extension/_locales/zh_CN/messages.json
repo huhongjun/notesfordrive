@@ -1,0 +1,33 @@
+{
+  "app_name": {
+    "message": "Notes for GDrive",
+    "description": "name of the localization tab"
+  },
+  "app_desc":{
+    "message": "在Chrome浏览器中轻松创建笔记，并且作为Google Documents与Google Drive自动同步。用户可以选择登陆不同Google帐号的"
+  },
+  "options_preferences": {
+    "message": "配置"
+  },
+  "options_account": {
+    "message": "帐号"
+  },
+  "options_about": {
+    "message": "关于"
+  },
+  "options_sign_out": {
+    "message": "Google Drive: 退出登录"
+  },
+  "options_margin": {
+    "message": "在段落下面添加边界线"
+  },
+  "options_open_folder": {
+    "message": "Google Drive: 打开笔记"
+  },
+  "options_signin_account": {
+    "message": "当前登录帐号："
+  },
+  "popup_settings_button": {
+    "message": "设置"
+  }
+}
