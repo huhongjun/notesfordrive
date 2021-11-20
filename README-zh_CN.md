@@ -23,7 +23,7 @@ Chrome扩展 - 创建和保存笔记为Google Drive中的文档。
 
 **Authentication**
 
-OAuth2使用一个修改版本，来自https://github.com/borismus/oauth2-extensions，可以让插件登录和使用与Chrome浏览器不同的Google帐户。
+OAuth2使用一个修改版本，来自[borismus](https://github.com/borismus/oauth2-extensions)，可让插件使用与Chrome不同的Google帐户。
 
 The Chrome identity API largely makes the need for directly interacting with the OAuth2 API a thing of the past, however it requires users to be logged into their Chrome browser, which may not be ideal when they have both personal and work credentials. Using the OAuth API directly allows users to be logged into whichever Google Docs account they wish.
 
